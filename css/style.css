@@ -128,6 +128,14 @@ option {
 	font-family: 'roboto', sans-serif;
 }
 
+input[disabled] {
+	text-decoration: line-through;
+}
+
+.pricelabel {
+	font-size: 1.5em;
+}
+
 /* ================================= 
   Page Styles
 ==================================== */
