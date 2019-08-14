@@ -2,10 +2,7 @@ const $designOption = $('#design');
 const $colorOption = $('#color');
 const jsPunsClr = ['Cornflower Blue', 'Dark Slate Grey', 'Gold'];
 const loveJsClr = ['Tomato', 'Steel Blue', 'Dim Grey'];
-const $payment = $('#payment');
 let totalCost = 0;
-const mainConfPrice = 200;
-const workshopPrice = 100;
 
 $(document).ready(function() {
     $('#name').focus()
@@ -26,6 +23,10 @@ $(document).ready(function() {
     activities();
     price();
     payment();
+
+    $('button').on('click', function(e) {
+        formValidation(e);
+    });
 });
 // End of Document Ready
 
@@ -90,8 +91,10 @@ const activities = () => {
     $('.activities').change('input', function(event) {
         //console.log(`${this.text()}`);
         console.log(event);
-        console.log(event.target.parentElement.innerText);
+        //console.log(event.target.parentElement.innerText);
+        console.log(event.target.attributes["data-cost"].value);
 
+        // look at doing event.target on lines 103-104 instead of typing out the attribute two times
         if (event.target.name === 'express' && event.target.checked) {
             $("input[name='js-frameworks']").prop('disabled', true);
             $("input[name='js-frameworks']").parent().css("text-decoration", "line-through");
@@ -121,6 +124,12 @@ const activities = () => {
         updatePrice();
     });
 
+    /*
+    $('.activities').change('input', function() {
+        $(this).
+    });
+    */
+
 }
 
 const price = () => {
@@ -131,16 +140,26 @@ const price = () => {
 
 const updatePrice = () => {
     // if the input name === 'all' then the price changes by 200 and any other name the price changes by 100
-    if (event.target.name === 'all' && event.target.checked) {
-        totalCost += mainConfPrice;
-    } else if (event.target.name === 'all' && !event.target.checked) {
-        totalCost -= mainConfPrice;
-    } else if (event.target.name !== 'all' && event.target.checked) {
-        totalCost += workshopPrice;
-    } else if (event.target.name !== 'all' && !event.target.checked) {
-        totalCost -= workshopPrice;
-    }
 
+    let cost = parseInt(event.target.attributes["data-cost"].value.substring(1));  // need to remove the dollar symbol from the string and turn it into an int
+    // could change this to try and use the data-cost atrribute on the event to update the price instead of having it saved as a variable at the top
+
+    if (event.target.checked) {
+        totalCost += cost;
+    } else {
+        totalCost -= cost;
+    }
+/*
+    if (event.target.name === 'all' && event.target.checked) {
+        totalCost += cost;
+    } else if (event.target.name === 'all' && !event.target.checked) {
+        totalCost -= cost;
+    } else if (event.target.name !== 'all' && event.target.checked) {
+        totalCost += cost;
+    } else if (event.target.name !== 'all' && !event.target.checked) {
+        totalCost -= cost;
+    }
+*/
     $('#price').text(totalCost);
 };
 
@@ -152,6 +171,7 @@ const updatePrice = () => {
 const payment = () => {
     //$payment.children().eq(0).prop('disabled', true);
     //$payment.val('Select Payment Method').prop('disabled', true);
+    const $payment = $('#payment');
     const $paymentSection = $('.activities').next();
     const $ccSection = $('#credit-card');
     const $bitcoinSection = $paymentSection.children().eq(-1);
@@ -164,19 +184,89 @@ const payment = () => {
     $payment.change(function() {
         if ($(this).val() === 'credit card') {
             $ccSection.show();
-            $bitcoinSection.hide(); // hide the bitcoin text
+            $bitcoinSection.hide();
             $paypalSection.hide();
         } else if ($(this).val() === 'paypal') {
             $ccSection.hide();
-            $bitcoinSection.hide(); // hide the bitcoin text
+            $bitcoinSection.hide();
             $paypalSection.show();
         } else if ($(this).val() === 'bitcoin') {
             $ccSection.hide();
-            $bitcoinSection.show(); // hide the bitcoin text
+            $bitcoinSection.show();
             $paypalSection.hide();
         }
     });
 };
+
+// create some kind of function that loops through the checkbox/input elements and determines if it's true that 
+// any of those elements are checked, or false.
+// Then you'll need to make sure that the event that leads to your form being submitted calls 
+// for all of those validations to be run. And if they don't measure up, you'll need to prevent the form from submitting.
+
+// the parent function that runs all the smaller validations
+const formValidation = (event) => {
+    //console.log('I am here');
+    //console.log(event);
+
+    const $form = $("form");
+    const userEmail = $('#mail').val();
+    const regex = /^\w+@\w+\.\D+$/
+
+    // how to get 4 separate validations to fire at once
+    // loop through them?
+
+    validateCreditCard(event);
+
+    if ($('#name').val() === '') {
+        //$form.submit(function(e){
+            event.preventDefault();
+        //});
+    }
+
+    validateCheckBoxes(event);
+
+    
+    if (!regex.test(userEmail)) {
+        //$form.submit(function(e){
+            event.preventDefault();
+        //});
+    }
+};
+
+const validateCreditCard = (event) => {
+
+    const ccRegex = /^\d{13,16}$/
+    const cvvRegex = /^\d{3}$/
+    const zipCodeRegex = /^\d{5}$/
+    const ccNum = $('#cc-num').val();
+    const zipCode = $('#zip').val();
+    const cvvCode = $('#cvv').val();
+
+    if ($('#payment').val() === 'credit card') {
+        if (ccRegex.test(ccNum) && cvvRegex.test(cvvCode) && zipCodeRegex.test(zipCode)) {
+            return;
+        } else {
+            //form.submit(function(e){
+                event.preventDefault();
+            //});
+        }
+    }
+
+}
+
+const validateCheckBoxes = (event) => {
+    let countChecked = 0;
+    $('input[type="checkbox"]').each(function(index, element) {
+        if ($(element).prop("checked")) {
+            countChecked += 1;
+            return;
+        };
+    });
+    console.log(countChecked);
+    if (countChecked === 0) {
+        event.preventDefault();
+    }
+}
 
 
 
