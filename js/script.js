@@ -95,35 +95,36 @@ $(document).ready(function() {
             console.log(event);
             //console.log(event.target.parentElement.innerText);
             console.log(event.target.attributes["data-cost"].value);
+            const checkbox = event.target;
 
             // look at doing event.target on lines 103-104 instead of typing out the attribute two times
-            if (event.target.name === 'express' && event.target.checked) {
+            if (checkbox.name === 'express' && checkbox.checked) {
                 $("input[name='js-frameworks']").prop('disabled', true);
                 $("input[name='js-frameworks']").parent().css("text-decoration", "line-through");
-            } else if (event.target.name === 'express' && !event.target.checked) {
+            } else if (checkbox.name === 'express' && !checkbox.checked) {
                 $("input[name='js-frameworks']").prop('disabled', false);
                 $("input[name='js-frameworks']").parent().css("text-decoration", "none");
-            } else if (event.target.name === 'js-frameworks' && event.target.checked) {
+            } else if (checkbox.name === 'js-frameworks' && checkbox.checked) {
                 $("input[name='express']").prop('disabled', true);
                 $("input[name='express']").parent().css("text-decoration", "line-through");
-            } else if (event.target.name === 'js-frameworks' && !event.target.checked) {
+            } else if (checkbox.name === 'js-frameworks' && !checkbox.checked) {
                 $("input[name='express']").prop('disabled', false);
                 $("input[name='express']").parent().css("text-decoration", "none");
-            } else if (event.target.name === 'js-libs' && event.target.checked) {
+            } else if (checkbox.name === 'js-libs' && checkbox.checked) {
                 $("input[name='node']").prop('disabled', true);
                 $("input[name='node']").parent().css("text-decoration", "line-through");
-            } else if (event.target.name === 'js-libs' && !event.target.checked) {
+            } else if (checkbox.name === 'js-libs' && !checkbox.checked) {
                 $("input[name='node']").prop('disabled', false);
                 $("input[name='node']").parent().css("text-decoration", "none");
-            } else if (event.target.name === 'node' && event.target.checked) {
+            } else if (checkbox.name === 'node' && checkbox.checked) {
                 $("input[name='js-libs']").prop('disabled', true);
                 $("input[name='js-libs']").parent().css("text-decoration", "line-through");
-            } else if (event.target.name === 'node' && !event.target.checked) {
+            } else if (checkbox.name === 'node' && !checkbox.checked) {
                 $("input[name='js-libs']").prop('disabled', false);
                 $("input[name='js-libs']").parent().css("text-decoration", "none");
             }
 
-            updatePrice();
+            updatePrice(event);
         });
 
         /*
@@ -143,7 +144,7 @@ $(document).ready(function() {
 
     price();
 
-    const updatePrice = () => {
+    const updatePrice = (event) => {
         // if the input name === 'all' then the price changes by 200 and any other name the price changes by 100
 
         let cost = parseInt(event.target.attributes["data-cost"].value.substring(1));  // need to remove the dollar symbol from the string and turn it into an int
@@ -212,104 +213,129 @@ $(document).ready(function() {
 
     // the parent function that runs all the smaller validations
     const formValidation = (event) => {
-        const $form = $("form");
+        
+        //validateName();
+        //validateEmail();
+        //validateCheckBoxes();
 
-        validateCreditCard(event);
-        validateCheckBoxes(event);
-        validateName(event);
-        validateEmail(event);
-    };
-
-    const validateCreditCard = (event) => {
-
-        const ccRegex = /^\d{13,16}$/
-        const cvvRegex = /^\d{3}$/
-        const zipCodeRegex = /^\d{5}$/
-        const ccNum = $('#cc-num').val();
-        const zipCode = $('#zip').val();
-        const cvvCode = $('#cvv').val();
 
         if ($('#payment').val() === 'credit card') {
-            if (ccRegex.test(ccNum) && cvvRegex.test(cvvCode) && zipCodeRegex.test(zipCode)) {
-                return;
+            //validateCreditCard();
+            validateCvv();
+            //validateZipCode();
+
+            /*if (validateCreditCard() && validateCvv() && validateZipCode()) {
+                return true;
             } else {
-                event.preventDefault();
-            }
+                return false
+            }*/
         }
 
+        //validateCheckBoxes();
+        //validateName();
+        //validateEmail();
     };
 
-    $('button').on('click', function(e) {
-        formValidation(e);
+    $('form').submit(function(e) {
+        if (formValidation()) {
+            return true;
+        } else {
+            e.preventDefault();
+        }
     });
 
-    const validateCheckBoxes = (event) => {
+    const validateCreditCard = () => {
+        const ccRegex = /^\d{13,16}$/
+        const ccNum = $('#cc-num').val();
+        const $ccNumLabel = $('label[for=cc-num]');
+        //const $span = `<span class="error" data-validation="cc">Valid credit card number required</span>`;
+        
+        if (ccRegex.test(ccNum)) {
+            $ccNumLabel.removeClass('error');
+            return true;
+        } else {
+            $ccNumLabel.addClass('error');
+            return false;
+        }
+    };
+
+    const validateZipCode = () => {
+        const zipCodeRegex = /^\d{5}$/
+        const zipCode = $('#zip').val();
+        const $zipCodeLabel = $('label[for=zip]');
+        //const $span = `<span class="error" data-validation="zip">Valid zip code required</span>`;
+
+        if (zipCodeRegex(zipCode)) {
+            $zipCodeLabel.removeClass('error');
+            return true;
+        } else {
+            $zipCodeLabel.addClass('error');
+            return false;
+        }
+    };
+
+    const validateCvv = () => {
+        const cvvRegex = /^\d{3}$/
+        const cvvCode = $('#cvv').val();
+        const $cvvLabel = $('label[for=cvv]');
+        //const $span = `<span class="error" data-validation="cvv">Valid cvv code required</span>`;
+        console.log(cvvRegex(cvvCode));
+        if (cvvRegex(cvvCode)) {
+            $cvvLabel.removeClass('error');
+            return true;
+        } else {
+            $cvvLabel.addClass('error');
+            return false;
+        }
+    }
+
+    const validateCheckBoxes = () => {
+        const $checkboxLabel = $('.activities').children().eq(0);
+        //const $span = `<span class="error" data-validation="checkbox">At least one activity needs to be selected</span>`;
+
         let countChecked = 0;
         $('input[type="checkbox"]').each(function(index, element) {
             if ($(element).prop("checked")) {
                 countChecked += 1;
-                return;
+                $checkboxLabel.removeClass('error');
+                return true;
             };
         });
         console.log(countChecked);
         if (countChecked === 0) {
-            event.preventDefault();
+            $checkboxLabel.addClass('error');
+            return false;
         }
     };
 
-    const validateName = (event) => {
+    const validateName = () => {
+        const $nameLabel = $('label[for=name]');
+        //const $span = `<span class="error" data-validation="name">Must enter a name</span>`;
+
         if ($('#name').val() === '') {
-            event.preventDefault();
+            $nameLabel.addClass('error');
+            return false;
+        } else {
+            $nameLabel.removeClass('error');
+            return true;
         }
     };
 
-    const validateEmail = (event) => {
+    const validateEmail = () => {
         const regex = /^\w+@[a-z0-9]+\.\D+$/
         const userEmail = $('#mail').val();
-
-        if (!regex.test(userEmail)) {
-            event.preventDefault();
-        }
-    };
-
-    const addErrorMessages = () => {
-        const $nameLabel = $('label[for=name]');
         const $emailLabel = $('label[for=mail]');
-        const $checkboxLabel = $('.activities').children().eq(0);
-        const $ccNumLabel = $('label[for=cc-num]');
-        const $zipCodeLabel = $('label[for=zip]');
-        const $cvvLabel = $('label[for=cvv]');
-        const $span = `<span class="name-error">tttt</span>`;
-        const errorMessage = {
-            Name: 'Must enter a name',
-            Email: 'Valid email required',
-            Activity: ' At least one activity needs to be selected',
-            CC: 'Valid credit card number required',
-            Zip: 'Valid zip code required',
-            CVV: 'Valid cvv code required'
+        //const $span = `<span class="error" data-validation="email">Valid email required</span>`;
+
+        if (regex.test(userEmail)) {
+            $emailLabel.removeClass('error');
+            return true;
+        } else {
+            $emailLabel.addClass('error');
+            return false;
         }
-
-        $nameLabel.append($span);
-        $('.name-error').hide();
-        $emailLabel.append($span);
-        $('.error').hide();
-        $checkboxLabel.append($span);
-        $('.error').hide();
-        $ccNumLabel.append($span);
-        $('.error').hide();
-        $zipCodeLabel.append($span);
-        $('.error').hide();
-        $cvvLabel.append($span);
-        $('.error').hide();
     };
 
-    const showErrorMessage = (event) => {
-        // look to show the message for just 5 seconds
-        $('.name-error').text("error").show(5);
-    };
-
-    addErrorMessages();
-    showErrorMessage(); // this will be called in the validation functions
 });
 
 
