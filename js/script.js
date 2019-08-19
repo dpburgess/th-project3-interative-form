@@ -3,13 +3,20 @@ const $colorOption = $('#color');
 const $name = $('#name');
 const jsPunsClr = ['Cornflower Blue', 'Dark Slate Grey', 'Gold'];
 const loveJsClr = ['Tomato', 'Steel Blue', 'Dim Grey'];
+const $colorLabel = $('label[for="color"]');
 let totalCost = 0;
 
 $(document).ready(function() {
     $name.focus();
     $('#other-title').hide();
+    $colorLabel.hide();
+    $colorOption.hide();
+    // color label hide
+    // color select hide
 
     $designOption.change(function() {
+        $colorLabel.show();
+        $colorOption.show();
         clearOptions();
         if ($designOption.val() === 'js puns') {
             jsPuns();
@@ -61,7 +68,6 @@ $(document).ready(function() {
     };
 
     $('.activities').change('input', function(event) {
-        //console.log(event.target.attributes["data-cost"].value);
         const checkbox = event.target;
 
         $('input[type="checkbox"]').each(function(index, element) {
@@ -140,11 +146,27 @@ $(document).ready(function() {
         let ccResponse = '';
 
         let validNameResponse = validateName();
-        let validEmailResponse = validateEmail();
+        let validEmailResponse = ''; //validateEmail();
         let validCheckboxResponse = validateCheckBoxes();
         let validCCResponse = validateCreditCard();
         let validCvvResponse = validateCvv();
         let validZipResponse = validateZipCode();
+
+        $('#mail').keydown(function(e) {
+            const userEmail = e.target.value;
+            const regex = /^\w+@[a-z0-9]+\.\D+$/
+            const $emailLabel = $('label[for=mail]');
+    
+            if (regex.test(userEmail)) {
+                $emailLabel.removeClass('error');
+                validEmailResponse = true;
+            } else {
+                $emailLabel.addClass('error');
+                $('form').preventDefault();
+                validEmailResponse = false;
+            }
+        });
+
 
         if (validNameResponse && validEmailResponse && validCheckboxResponse) {
             response = true;
@@ -186,6 +208,13 @@ $(document).ready(function() {
         const ccRegex = /^\d{13,16}$/
         const ccNum = $('#cc-num').val();
         const $ccNumLabel = $('label[for=cc-num]');
+
+        if (ccNum === '') {
+            $ccNumLabel.addClass('lengtherror');
+            return false;
+        } else {
+            $ccNumLabel.removeClass('lengtherror');
+        }
         
         if (ccRegex.test(ccNum)) {
             $ccNumLabel.removeClass('error');
@@ -269,7 +298,6 @@ $(document).ready(function() {
             return false;
         }
     };
-
 });
 
 
