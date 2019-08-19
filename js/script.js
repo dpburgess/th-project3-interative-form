@@ -60,43 +60,29 @@ $(document).ready(function() {
         addOptions(jsPunsClr);
     };
 
-    const activities = () => {
-        $('.activities').change('input', function(event) {
-            //console.log(event.target.attributes["data-cost"].value);
-            const checkbox = event.target;
+    $('.activities').change('input', function(event) {
+        //console.log(event.target.attributes["data-cost"].value);
+        const checkbox = event.target;
 
-            // look at doing event.target on lines 103-104 instead of typing out the attribute two times
-            if (checkbox.name === 'express' && checkbox.checked) {
-                $("input[name='js-frameworks']").prop('disabled', true);
-                $("input[name='js-frameworks']").parent().css("text-decoration", "line-through");
-            } else if (checkbox.name === 'express' && !checkbox.checked) {
-                $("input[name='js-frameworks']").prop('disabled', false);
-                $("input[name='js-frameworks']").parent().css("text-decoration", "none");
-            } else if (checkbox.name === 'js-frameworks' && checkbox.checked) {
-                $("input[name='express']").prop('disabled', true);
-                $("input[name='express']").parent().css("text-decoration", "line-through");
-            } else if (checkbox.name === 'js-frameworks' && !checkbox.checked) {
-                $("input[name='express']").prop('disabled', false);
-                $("input[name='express']").parent().css("text-decoration", "none");
-            } else if (checkbox.name === 'js-libs' && checkbox.checked) {
-                $("input[name='node']").prop('disabled', true);
-                $("input[name='node']").parent().css("text-decoration", "line-through");
-            } else if (checkbox.name === 'js-libs' && !checkbox.checked) {
-                $("input[name='node']").prop('disabled', false);
-                $("input[name='node']").parent().css("text-decoration", "none");
-            } else if (checkbox.name === 'node' && checkbox.checked) {
-                $("input[name='js-libs']").prop('disabled', true);
-                $("input[name='js-libs']").parent().css("text-decoration", "line-through");
-            } else if (checkbox.name === 'node' && !checkbox.checked) {
-                $("input[name='js-libs']").prop('disabled', false);
-                $("input[name='js-libs']").parent().css("text-decoration", "none");
+        $('input[type="checkbox"]').each(function(index, element) {
+            if (checkbox.name === 'all') {
+                return;
             }
-
-            updatePrice(event);
+            if (checkbox.checked) {
+                if (checkbox !== element && checkbox.attributes['data-day-and-time'].value === $(element).attr('data-day-and-time')) {
+                    $(element).prop('disabled', true);
+                    $(element).parent().css('text-decoration', 'line-through');
+                }
+            } else {
+                if (checkbox.attributes['data-day-and-time'].value === $(element).attr('data-day-and-time')) {
+                    $(element).prop('disabled', false);
+                    $(element).parent().css('text-decoration', 'none');
+                }
+            }
         });
-    }
 
-    activities();
+        updatePrice(event);
+    });
 
     const price = () => {
         const $price = `<label class="pricelabel">Final Price: $<span id="price">${totalCost}</span></label>`;
