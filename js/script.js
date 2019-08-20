@@ -6,15 +6,13 @@ const loveJsClr = ['Tomato', 'Steel Blue', 'Dim Grey'];
 const $colorLabel = $('label[for="color"]');
 let totalCost = 0;
 
-$(document).ready(function() {
+$(document).ready(function () {
     $name.focus();
     $('#other-title').hide();
     $colorLabel.hide();
     $colorOption.hide();
-    // color label hide
-    // color select hide
 
-    $designOption.change(function() {
+    $designOption.change(function () {
         $colorLabel.show();
         $colorOption.show();
         clearOptions();
@@ -27,8 +25,8 @@ $(document).ready(function() {
 
     const showJobRole = () => {
         const $titleSelect = $('#title');
-        $titleSelect.change(function() {
-            if ($('#title option:selected').text() === 'Other') {    
+        $titleSelect.change(function () {
+            if ($('#title option:selected').text() === 'Other') {
                 $('#other-title').show();
             } else {
                 $('#other-title').hide();
@@ -39,11 +37,11 @@ $(document).ready(function() {
     showJobRole();
 
     const clearOptions = () => {
-        $colorOption.children().each(function(index, item) {
+        $colorOption.children().each(function (index, item) {
             item.remove();
         })
     };
-    
+
     const addFirstOption = () => {
         const $option = `<option>Please select a T-shirt theme</option>`;
         $colorOption.append($option);
@@ -53,7 +51,7 @@ $(document).ready(function() {
     addFirstOption();
 
     const addOptions = array => {
-        $.each(array, function(index, value){
+        $.each(array, function (index, value) {
             let $element = `<option>${value}</option>`;
             $colorOption.append($element);
         })
@@ -67,10 +65,10 @@ $(document).ready(function() {
         addOptions(jsPunsClr);
     };
 
-    $('.activities').change('input', function(event) {
+    $('.activities').change('input', function (event) {
         const checkbox = event.target;
 
-        $('input[type="checkbox"]').each(function(index, element) {
+        $('input[type="checkbox"]').each(function (index, element) {
             if (checkbox.name === 'all') {
                 return;
             }
@@ -120,8 +118,8 @@ $(document).ready(function() {
         $('#payment option[value="credit card"]').prop('selected', true); // set defualt credit card selection
         $bitcoinSection.hide(); // hide the bitcoin text
         $paypalSection.hide(); // hide the paypal text
-        
-        $payment.change(function() {
+
+        $payment.change(function () {
             if ($(this).val() === 'credit card') {
                 $ccSection.show();
                 $bitcoinSection.hide();
@@ -146,27 +144,11 @@ $(document).ready(function() {
         let ccResponse = '';
 
         let validNameResponse = validateName();
-        let validEmailResponse = ''; //validateEmail();
+        let validEmailResponse = validateEmail();
         let validCheckboxResponse = validateCheckBoxes();
         let validCCResponse = validateCreditCard();
         let validCvvResponse = validateCvv();
         let validZipResponse = validateZipCode();
-
-        $('#mail').keydown(function(e) {
-            const userEmail = e.target.value;
-            const regex = /^\w+@[a-z0-9]+\.\D+$/
-            const $emailLabel = $('label[for=mail]');
-    
-            if (regex.test(userEmail)) {
-                $emailLabel.removeClass('error');
-                validEmailResponse = true;
-            } else {
-                $emailLabel.addClass('error');
-                $('form').preventDefault();
-                validEmailResponse = false;
-            }
-        });
-
 
         if (validNameResponse && validEmailResponse && validCheckboxResponse) {
             response = true;
@@ -181,7 +163,7 @@ $(document).ready(function() {
                 ccResponse = false;
             }
         }
-        
+
         if ($('#payment').val() === 'credit card') {
             if (response && ccResponse) {
                 return true;
@@ -197,7 +179,7 @@ $(document).ready(function() {
         }
     };
 
-    $('form').submit(function(e) {
+    $('form').submit(function (e) {
         if (formValidation(e)) {
         } else {
             e.preventDefault();
@@ -215,7 +197,7 @@ $(document).ready(function() {
         } else {
             $ccNumLabel.removeClass('lengtherror');
         }
-        
+
         if (ccRegex.test(ccNum)) {
             $ccNumLabel.removeClass('error');
             return true;
@@ -243,7 +225,7 @@ $(document).ready(function() {
         const cvvRegex = /^\d{3}$/
         const cvvCode = $('#cvv').val();
         const $cvvLabel = $('label[for=cvv]');
-        
+
         if (cvvRegex.test(cvvCode)) {
             $cvvLabel.removeClass('error');
             return true;
@@ -257,7 +239,7 @@ $(document).ready(function() {
         const $checkboxLabel = $('.activities').children().eq(0);
 
         let countChecked = 0;
-        $('input[type="checkbox"]').each(function(index, element) {
+        $('input[type="checkbox"]').each(function (index, element) {
             if ($(element).prop("checked")) {
                 countChecked += 1;
                 $checkboxLabel.removeClass('error');
@@ -298,6 +280,18 @@ $(document).ready(function() {
             return false;
         }
     };
+
+    $('#mail').keydown(function (e) {
+        const userEmail = e.target.value;
+        const regex = /^\w+@[a-z0-9]+\.\D+$/
+        const $emailLabel = $('label[for=mail]');
+
+        if (regex.test(userEmail)) {
+            $emailLabel.removeClass('error');
+        } else {
+            $emailLabel.addClass('error');
+        }
+    });
 });
 
 
