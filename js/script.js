@@ -12,17 +12,7 @@ $(document).ready(function() {
   $colorLabel.hide();
   $colorOption.hide();
 
-  $designOption.change(function() {
-    $colorLabel.show();
-    $colorOption.show();
-    clearOptions();
-    if ($designOption.val() === "js puns") {
-      jsPuns();
-    } else if ($designOption.val() === "heart js") {
-      loveJS();
-    }
-  });
-
+  // this job role is hidden by default and will show by default if javascript is turned off
   const showJobRole = () => {
     const $titleSelect = $("#title");
     $titleSelect.change(function() {
@@ -36,6 +26,22 @@ $(document).ready(function() {
 
   showJobRole();
 
+  /*** T-Shirt Design and Color Section  ***/
+
+  // show the color select list and specific colors in that list depending on which design option is chosen
+  $designOption.change(function() {
+    $colorLabel.show();
+    $colorOption.show();
+    clearOptions();
+    if ($designOption.val() === "js puns") {
+      jsPuns();
+    } else if ($designOption.val() === "heart js") {
+      loveJS();
+    }
+  });
+
+  //  when selecting a different design option make sure the previous color options are removed
+  // so a duplicating list doesnt show up
   const clearOptions = () => {
     $colorOption.children().each(function(index, item) {
       item.remove();
@@ -65,13 +71,20 @@ $(document).ready(function() {
     addOptions(jsPunsClr);
   };
 
+  /***   Register for Activities Section  ***/
+
+  // grab the parent element so any events that happen within it can be captured
   $(".activities").change("input", function(event) {
     const checkbox = event.target;
 
+    // loop through each checkbox to compare them to the checkbox that received the user's event
     $('input[type="checkbox"]').each(function(index, element) {
       if (checkbox.name === "all") {
         return;
       }
+
+      // if a checkbox is not the element of the event but has a matching day-and-time attribute
+      // then disable that element and enable on the opposite action
       if (checkbox.checked) {
         if (
           checkbox !== element &&
@@ -106,6 +119,8 @@ $(document).ready(function() {
 
   price();
 
+  // read the data-cost attribute of the checkbox getting the event and then subtract if the user is unchecking
+  // and add if the user is checking
   const updatePrice = event => {
     let cost = parseInt(
       event.target.attributes["data-cost"].value.substring(1)
@@ -120,6 +135,8 @@ $(document).ready(function() {
     $("#price").text(totalCost);
   };
 
+  /***   Payment Info Section   ***/
+
   const payment = () => {
     const $payment = $("#payment");
     const $paymentSection = $(".activities").next();
@@ -128,8 +145,8 @@ $(document).ready(function() {
     const $paypalSection = $paymentSection.children().eq(-2);
     $('#payment option[value="select_method"]').prop("disabled", true);
     $('#payment option[value="credit card"]').prop("selected", true); // set defualt credit card selection
-    $bitcoinSection.hide(); // hide the bitcoin text
-    $paypalSection.hide(); // hide the paypal text
+    $bitcoinSection.hide(); // hide the bitcoin text on load
+    $paypalSection.hide(); // hide the paypal text on load
 
     $payment.change(function() {
       if ($(this).val() === "credit card") {
@@ -152,6 +169,10 @@ $(document).ready(function() {
 
   // the parent function that runs all the smaller validations
   const formValidation = () => {
+    // if this function returns false then the preventDefault action on the form will fire, so if the fields pass validation
+    // then a true response needs to be returned so preventDefault doesnt run
+    // the Name, Email, and Checkbox activity fields will always go through validation
+    // the credit card related fields only go through validation if credit card is selected on the drop down
     let response = "";
     let ccResponse = "";
 
@@ -198,6 +219,7 @@ $(document).ready(function() {
     }
   });
 
+  // validation logic for the credit card field
   const validateCreditCard = () => {
     const ccRegex = /^\d{13,16}$/;
     const ccNum = $("#cc-num").val();
@@ -219,6 +241,7 @@ $(document).ready(function() {
     }
   };
 
+  // validation logic for the zip code field
   const validateZipCode = () => {
     const zipCodeRegex = /^\d{5}$/;
     const zipCode = $("#zip").val();
@@ -233,6 +256,7 @@ $(document).ready(function() {
     }
   };
 
+  // validation logic for the CVV field
   const validateCvv = () => {
     const cvvRegex = /^\d{3}$/;
     const cvvCode = $("#cvv").val();
@@ -247,11 +271,14 @@ $(document).ready(function() {
     }
   };
 
+  // validation logic for the activity checkboxes
   const validateCheckBoxes = () => {
     const $checkboxLabel = $(".activities")
       .children()
       .eq(0);
 
+    // counting to see how many checkboxes have been checked
+    // if one or more have been checked then validation should not show
     let countChecked = 0;
     $('input[type="checkbox"]').each(function(index, element) {
       if ($(element).prop("checked")) {
@@ -269,6 +296,7 @@ $(document).ready(function() {
     }
   };
 
+  // validation logic for the name field
   const validateName = () => {
     const $nameLabel = $("label[for=name]");
 
@@ -281,6 +309,7 @@ $(document).ready(function() {
     }
   };
 
+  // validation logic for the email field
   const validateEmail = () => {
     const regex = /^\w+@[a-z0-9]+\.\D+$/;
     const userEmail = $("#mail").val();
@@ -295,6 +324,7 @@ $(document).ready(function() {
     }
   };
 
+  // real time error message logic for the email field
   $("#mail").keydown(function(e) {
     const userEmail = e.target.value;
     const regex = /^\w+@[a-z0-9]+\.\D+$/;
